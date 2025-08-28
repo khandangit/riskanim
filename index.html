@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NZ Risk Matrix — Entry • Exposure • Establishment → Overall</title>
+  <title>NZ Risk Matrix — Entry • Exposure • Establishment • Impact • Overall</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
   <style>
     :root { --ui-gap: 10px; }
@@ -59,7 +59,7 @@
       <option>High</option><option selected>Moderate</option><option>Low</option><option>Very Low</option><option>Negligible</option>
     </select>
 
-    <label>Consequence</label>
+    <label>Impact (Consequence)</label>
     <select id="econSel">
       <option>Very High</option><option>High</option><option selected>Moderate</option><option>Low</option><option>Very Low</option><option>Negligible</option>
     </select>
@@ -74,7 +74,7 @@
   </div>
 
   <div class="small" style="margin:-6px 12px 10px 12px;">
-    NZ rules: Table 5-4 (likelihood combiner) then Table 5-6 (overall risk). Edit the matrices in the code block if needed.
+    NZ rules: Table 5-4 (combine Entry, Exposure, Establishment) → Table 5-6 (Overall risk using Impact).
   </div>
 
   <script>
@@ -84,8 +84,6 @@
 
     // ---- Table 5-4: combine two likelihood scores (First vs Second) ----
     // Levels: Negligible, Very Low, Low, Moderate, High
-    // Cells copied from your screenshot.
-    const L = ["Negligible","Very Low","Low","Moderate","High"];
     const TABLE_5_4 = {
       "Negligible": {"Negligible":"Negligible","Very Low":"Negligible","Low":"Negligible","Moderate":"Negligible","High":"Negligible"},
       "Very Low":   {"Negligible":"Negligible","Very Low":"Negligible","Low":"Very Low","Moderate":"Very Low","High":"Low"},
@@ -98,11 +96,9 @@
       return combine2( combine2(entry, exposure), establishment );
     }
 
-    // ---- Table 5-6: Overall risk (Likelihood × Consequences) ----
-    // Columns: Consequences = Negligible, Very Low, Low, Moderate, High, Very High
+    // ---- Table 5-6: Overall risk (Combined Likelihood × Impact) ----
+    // Columns: Impact = Negligible, Very Low, Low, Moderate, High, Very High
     // Rows: Combined Likelihood = Negligible, Very Low, Low, Moderate, High
-    // Values inferred from the NZ table you shared (monotone increase). Adjust if your policy doc differs.
-    const C = ["Negligible","Very Low","Low","Moderate","High","Very High"];
     const TABLE_5_6 = {
       "Negligible": {"Negligible":"Negligible","Very Low":"Negligible","Low":"Negligible","Moderate":"Negligible","High":"Negligible","Very High":"Negligible"},
       "Very Low":   {"Negligible":"Negligible","Very Low":"Negligible","Low":"Very Low","Moderate":"Very Low","High":"Low","Very High":"Moderate"},
@@ -110,26 +106,32 @@
       "Moderate":   {"Negligible":"Negligible","Very Low":"Very Low","Low":"Low","Moderate":"Moderate","High":"High","Very High":"Very High"},
       "High":       {"Negligible":"Negligible","Very Low":"Very Low","Low":"Moderate","Moderate":"High","High":"Very High","Very High":"Very High"}
     };
-    function overallRisk(like, consequence){ return TABLE_5_6[like][consequence]; }
+    function overallRisk(like, impact){ return TABLE_5_6[like][impact]; }
 
-    // Map qualitative to scalar size factors (for animation)
+    // Map qualitative to scalar size factors
     const likeToScalar = lvl => ({
       "High": 1.00, "Moderate": 0.78, "Low": 0.56, "Very Low": 0.38, "Negligible": 0.22
     })[lvl];
 
-    const riskToScalar = risk => ({
+    const impactToScalar = imp => ({ // for Impact node preview/phase
+      "Very High": 1.00, "High": 0.85, "Moderate": 0.70, "Low": 0.52, "Very Low": 0.38, "Negligible": 0.24
+    })[imp];
+
+    const riskToScalar = risk => ({  // for Overall size
       "Very High": 1.00, "High": 0.85, "Moderate": 0.70, "Low": 0.52, "Very Low": 0.38, "Negligible": 0.24
     })[risk];
 
     // =======================
     // p5 + recording
     // =======================
-    const CAN_W = 1100, CAN_H = 420;
-    const PADDING_X = 120;
-    const X0 = PADDING_X, X4 = CAN_W - PADDING_X;
-    const X1 = X0 + (X4 - X0) * 0.25;
-    const X2 = X0 + (X4 - X0) * 0.50;
-    const X3 = X0 + (X4 - X0) * 0.75;
+    const CAN_W = 1150, CAN_H = 440;
+    const PADDING_X = 90;
+    const X0 = PADDING_X, X5 = CAN_W - PADDING_X;
+    // five ticks: Entry, Exposure, Establishment, Impact, Overall
+    const X1 = X0 + (X5 - X0) * 0.20;
+    const X2 = X0 + (X5 - X0) * 0.40;
+    const X3 = X0 + (X5 - X0) * 0.60;
+    const X4 = X0 + (X5 - X0) * 0.80;
     const Y  = CAN_H/2 + 10;
 
     // UI refs
@@ -222,16 +224,17 @@
 
       // Path with ticks
       stroke(210); strokeWeight(2);
-      line(X0, Y, X4, Y);
+      line(X0, Y, X5, Y);
       [X0,X1,X2,X3,X4].forEach(x => line(x, Y-8, x, Y+8));
       noStroke();
 
-      // Labels
+      // Labels under ticks
       fill(40); textAlign(CENTER);
       text('Entry', X0, Y+28);
       text('Exposure', X1, Y+28);
       text('Establishment', X2, Y+28);
-      text('Overall', X3, Y+28);
+      text('Impact', X3, Y+28);
+      text('Overall', X4, Y+28);
 
       // Selections
       const S_MIN = Number(sMinSlider.value), S_MAX = Number(sMaxSlider.value);
@@ -239,54 +242,74 @@
       const exposureLike = exposureSel.value;
       const estabLike    = estabSel.value;
       const combinedLike = combine3(entryLike, exposureLike, estabLike);
-      const econ         = econSel.value;
-      const risk         = overallRisk(combinedLike, econ);
+      const impact       = econSel.value;
+      const risk         = overallRisk(combinedLike, impact);
 
+      // Sizes at each node
       const sEntry   = lerp(S_MIN, S_MAX, likeToScalar(entryLike));
       const sExpos   = lerp(S_MIN, S_MAX, likeToScalar(exposureLike));
       const sEstab   = lerp(S_MIN, S_MAX, likeToScalar(estabLike));
+      const sImpact  = lerp(S_MIN, S_MAX, impactToScalar(impact));
       const sOverall = lerp(S_MIN, S_MAX, riskToScalar(risk));
 
       // Info
       textAlign(LEFT);
-      text(`NZ Table 5-4 combined likelihood: ${combinedLike}`, X0, 36);
-      text(`NZ Table 5-6 overall risk (${combinedLike} × ${econ}): ${risk}`, X0, 54);
+      text(`Table 5-4 combined likelihood: ${combinedLike}`, X0, 36);
+      text(`Table 5-6 overall risk (${combinedLike} × ${impact}): ${risk}`, X0, 54);
 
-      // Time
+      // Time 0..4 across five phases (no extra cruise)
       if(!paused && !finished){
         const speedDiv = Number(speedSlider.value);
-        t += (1/speedDiv) * 6;
+        t += (1/speedDiv) * 6; // tune step
         if (t >= 4){ t = 4; finished = true; if(!capturing) noLoop(); setStatus('Finished'); }
       }
 
-      // Interpolation
-      let x, s;
+      // Piecewise interpolate position & size and set label text
+      let x, s, label;
       if (t <= 1){
         x = map(t, 0, 1, X0, X1);
         s = lerp(sEntry, sExpos, t);
+        label = `Entry: ${entryLike}`;
       } else if (t <= 2){
         x = map(t, 1, 2, X1, X2);
         s = lerp(sExpos, sEstab, t-1);
+        label = `Exposure: ${exposureLike}`;
       } else if (t <= 3){
         x = map(t, 2, 3, X2, X3);
-        s = lerp(sEstab, sOverall, t-2);
-      } else {
+        s = lerp(sEstab, sImpact, t-2);
+        label = `Establishment: ${estabLike}`;
+      } else { // 3..4
         x = map(t, 3, 4, X3, X4);
-        s = sOverall;
+        s = lerp(sImpact, sOverall, t-3);
+        label = `Impact: ${impact}`;
+        if (t === 4) label = `Overall: ${risk}`; // final label emphasis
       }
 
-      // Colour based on size (blue → orange → red)
+      // Colour by size (blue → orange → red)
       const col = colourForSize(s, S_MIN, S_MAX);
       fill(col.fill[0], col.fill[1], col.fill[2]);
       stroke(col.stroke[0], col.stroke[1], col.stroke[2]); strokeWeight(1.6);
 
+      // Draw marker
       drawMarker(shapeSel.value, x, Y, s);
+
+      // Label above marker (with subtle halo)
+      push();
+      textAlign(CENTER, BOTTOM);
+      noStroke();
+      fill(255,255,255,180); rectMode(CENTER);
+      const tw = textWidth(label) + 10, th = 18;
+      rect(x, Y - s - 20, tw, th, 6);
+      fill(30);
+      text(label, x, Y - s - 8);
+      pop();
 
       // Node previews
       drawNodePreview(X0, Y, sEntry);
       drawNodePreview(X1, Y, sExpos);
       drawNodePreview(X2, Y, sEstab);
-      drawNodePreview(X3, Y, sOverall);
+      drawNodePreview(X3, Y, sImpact);
+      drawNodePreview(X4, Y, sOverall);
     }
 
     function drawNodePreview(x,y,s){ push(); noStroke(); fill(220); circle(x, y-26, clamp(s,8,18)); pop(); }
