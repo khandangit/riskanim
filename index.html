@@ -231,7 +231,6 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -242,11 +241,9 @@
             0% {
                 box-shadow: 0 0 10px rgba(107, 94, 255, 0.3);
             }
-
             50% {
                 box-shadow: 0 0 20px rgba(107, 94, 255, 0.6);
             }
-
             100% {
                 box-shadow: 0 0 10px rgba(107, 94, 255, 0.3);
             }
@@ -256,11 +253,9 @@
             .wrap {
                 grid-template-columns: 1fr;
             }
-
             .ratings {
                 grid-template-columns: 1fr;
             }
-
             body {
                 padding: 16px;
             }
@@ -295,7 +290,7 @@
                     </div>
                     <div>
                         <label>Max size</label>
-                        <input id="sizeMax" type="range" min="30" max="90" step="1" value="56">
+                        <input id="sizeMax" type="range" min="30" max="200" step="1" value="150">
                     </div>
                 </div>
                 <div class="btns">
@@ -385,59 +380,67 @@
 
         // ==== TABLE 5-6 (as in your code) ====
         const TABLE_5_6 = {
-            "Negligible": {
-                "Negligible": "Negligible", "Very Low": "Negligible", "Low": "Negligible",
-                "Moderate": "Negligible", "High": "Negligible", "Very High": "Negligible"
-            },
-            "Exceptionally Low": {
-                "Negligible": "Not Applicable", "Very Low": "Not Applicable", "Low": "Not Applicable",
-                "Moderate": "Negligible", "High": "Very Low", "Very High": "Very Low"
-            },
-            "Very Very Low": {
-                "Negligible": "Not Applicable", "Very Low": "Not Applicable", "Low": "Not Applicable",
-                "Moderate": "Very Low", "High": "Low", "Very High": "Low"
-            },
-            "Very Low": {
-                "Negligible": "Negligible", "Very Low": "Negligible", "Low": "Very Low",
-                "Moderate": "Low", "High": "Low", "Very High": "Moderate"
-            },
-            "Low": {
-                "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
-                "Moderate": "Moderate", "High": "Moderate", "Very High": "High"
-            },
-            "Moderate": {
-                "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
-                "Moderate": "Moderate", "High": "High", "Very High": "Very High"
-            },
-            "High": {
-                "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
-                "Moderate": "Moderate", "High": "High", "Very High": "Very High"
-            }
-        };
+                "Negligible": {
+                    "Negligible": "Negligible", "Very Low": "Negligible", "Low": "Negligible",
+                    "Moderate": "Negligible", "High": "Negligible", "Very High": "Negligible"
+                },
+                "Exceptionally Low": {
+                    "Negligible": "Not Applicable", "Very Low": "Not Applicable", "Low": "Not Applicable",
+                    "Moderate": "Negligible", "High": "Very Low", "Very High": "Very Low"
+                },
+                "Very Very Low": {
+                    "Negligible": "Not Applicable", "Very Low": "Not Applicable", "Low": "Not Applicable",
+                    "Moderate": "Very Low", "High": "Low", "Very High": "Low"
+                },
+                "Very Low": {
+                    "Negligible": "Negligible", "Very Low": "Negligible", "Low": "Very Low",
+                    "Moderate": "Low", "High": "Low", "Very High": "Moderate"
+                },
+                "Low": {
+                    "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
+                    "Moderate": "Moderate", "High": "Moderate", "Very High": "High"
+                },
+                "Moderate": {
+                    "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
+                    "Moderate": "Moderate", "High": "High", "Very High": "Very High"
+                },
+                "High": {
+                    "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
+                    "Moderate": "Moderate", "High": "High", "Very High": "Very High"
+                }
+            };
         function overallRisk(like, impact) {
             return TABLE_5_6[like] && TABLE_5_6[like][impact] ? TABLE_5_6[like][impact] : "Not Applicable";
         }
 
-        // Scalars only affect animation sizing (not ratings)
+        // Scalars with wider spread for better visibility
         const likeToScalar = lvl => ({
-            "High": 1.00, "Moderate": 0.78, "Low": 0.56, "Very Low": 0.38, "Negligible": 0.22
+            "High": 1.20,       // Largest
+            "Moderate": 1.00,   // Noticeable drop
+            "Low": 0.75,        // Further drop
+            "Very Low": 0.50,   // Smaller
+            "Negligible": 0.25  // Smallest
         })[lvl];
 
         const impactToScalar = imp => ({
-            "Very High": 1.00, "High": 0.85, "Moderate": 0.70, "Low": 0.52, "Very Low": 0.38, "Negligible": 0.24
+            "Very High": 1.20,  // Largest
+            "High": 1.00,       // Noticeable drop
+            "Moderate": 0.75,   // Further drop
+            "Low": 0.50,        // Smaller
+            "Very Low": 0.30,   // Even smaller
+            "Negligible": 0.10  // Smallest
         })[imp];
 
-        // Include extra labels so the overall node still renders if those appear
         const riskToScalar = risk => ({
-            "Very High": 1.00,
-            "High": 0.85,
-            "Moderate": 0.70,
-            "Low": 0.52,
-            "Very Low": 0.38,
-            "Very very low": 0.32,
-            "Exceptionally low": 0.28,
-            "Negligible": 0.24,
-            "Not Applicable": 0.24
+            "Very High": 1.20,  // Largest
+            "High": 1.00,       // Noticeable drop
+            "Moderate": 0.75,   // Further drop
+            "Low": 0.50,        // Smaller
+            "Very Low": 0.30,   // Even smaller
+            "Very very low": 0.20,
+            "Exceptionally low": 0.15,
+            "Negligible": 0.10,
+            "Not Applicable": 0.10
         })[risk];
 
         // ============ p5 + recording ============
