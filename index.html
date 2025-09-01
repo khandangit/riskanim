@@ -18,9 +18,7 @@
             --gradient: linear-gradient(135deg, #6b5eff, #ff6b6b);
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -60,22 +58,13 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(107, 94, 255, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(107, 94, 255, 0.3);
         }
 
-        .controls {
-            display: grid;
-            gap: 12px;
-        }
-
-        .controls .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+        .controls { display: grid; gap: 12px; }
+        .controls .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
         label {
             font-size: 12px;
@@ -95,18 +84,10 @@
             font-family: Arial, Helvetica, sans-serif;
             transition: background 0.3s ease, transform 0.2s ease;
         }
-
         select:hover,
-        input[type="range"]:hover {
-            background: #3a4256;
-            transform: scale(1.02);
-        }
+        input[type="range"]:hover { background: #3a4256; transform: scale(1.02); }
 
-        .btns {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        .btns { display: flex; gap: 10px; flex-wrap: wrap; }
 
         button {
             padding: 10px 16px;
@@ -120,22 +101,15 @@
             position: relative;
             overflow: hidden;
         }
-
         button::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: left 0.4s ease;
         }
-
-        button:hover::before {
-            left: 100%;
-        }
-
+        button:hover::before { left: 100%; }
         button:hover {
             background: var(--accent);
             color: #fff;
@@ -143,22 +117,11 @@
             box-shadow: 0 0 15px rgba(107, 94, 255, 0.5);
         }
 
-        #playBtn {
-            background: #2ecc71;
-        }
+        #playBtn { background: #2ecc71; }
+        #playBtn:hover { background: #25b863; }
 
-        #playBtn:hover {
-            background: #25b863;
-        }
-
-        #recWebmBtn {
-            background: #2962ff;
-        }
-
-        #recWebmBtn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        #recWebmBtn { background: #2962ff; }
+        #recWebmBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         #status {
             font-size: 12px;
@@ -170,42 +133,25 @@
             animation: pulse 2s infinite;
         }
 
-        .ratings {
-            display: grid;
-            gap: 12px;
-            grid-template-columns: 1fr 1fr;
-        }
+        .ratings { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+        .ratings .item { display: flex; flex-direction: column; gap: 8px; }
 
-        .ratings .item {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .canvas-card {
-            padding: 0;
-            overflow: visible;
-        }
+        .canvas-card { padding: 0; overflow: visible; }
 
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
             padding: 12px 16px;
             border-bottom: 1px solid rgba(107, 94, 255, 0.2);
             background: #232a3b;
             border-radius: 16px 16px 0 0;
         }
 
-        .info {
-            color: var(--muted);
-            font-size: 14px;
-        }
+        .info { color: var(--muted); font-size: 14px; }
 
         canvas {
             display: block;
             width: 100%;
-            height: auto;
+            height: auto;           /* responsive height */
             background: #1a1f2b;
             border-radius: 0 0 16px 16px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -221,44 +167,15 @@
             box-shadow: 0 0 10px rgba(107, 94, 255, 0.4);
             transition: transform 0.3s ease;
         }
+        .pill:hover { transform: scale(1.05); }
 
-        .pill:hover {
-            transform: scale(1.05);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 10px rgba(107, 94, 255, 0.3);
-            }
-            50% {
-                box-shadow: 0 0 20px rgba(107, 94, 255, 0.6);
-            }
-            100% {
-                box-shadow: 0 0 10px rgba(107, 94, 255, 0.3);
-            }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
+        @keyframes pulse { 0% { box-shadow: 0 0 10px rgba(107,94,255,0.3);} 50% { box-shadow: 0 0 20px rgba(107,94,255,0.6);} 100% { box-shadow: 0 0 10px rgba(107,94,255,0.3);} }
 
         @media (max-width: 980px) {
-            .wrap {
-                grid-template-columns: 1fr;
-            }
-            .ratings {
-                grid-template-columns: 1fr;
-            }
-            body {
-                padding: 16px;
-            }
+            .wrap { grid-template-columns: 1fr; }
+            .ratings { grid-template-columns: 1fr; }
+            body { padding: 16px; }
         }
     </style>
 </head>
@@ -374,78 +291,61 @@
         };
         function combine2(a, b) { return TABLE_5_4[a][b]; }
         function combine3(entry, exposure, establishment) {
-            // Entry ⊗ Exposure, then ⊗ Establishment
             return combine2(combine2(entry, exposure), establishment);
         }
 
         // ==== TABLE 5-6 (as in your code) ====
         const TABLE_5_6 = {
-                "Negligible": {
-                    "Negligible": "Negligible", "Very Low": "Negligible", "Low": "Negligible",
-                    "Moderate": "Negligible", "High": "Negligible", "Very High": "Negligible"
-                },
-                "Exceptionally Low": {
-                    "Negligible": "Not Applicable", "Very Low": "Not Applicable", "Low": "Not Applicable",
-                    "Moderate": "Negligible", "High": "Very Low", "Very High": "Very Low"
-                },
-                "Very Very Low": {
-                    "Negligible": "Not Applicable", "Very Low": "Not Applicable", "Low": "Not Applicable",
-                    "Moderate": "Very Low", "High": "Low", "Very High": "Low"
-                },
-                "Very Low": {
-                    "Negligible": "Negligible", "Very Low": "Negligible", "Low": "Very Low",
-                    "Moderate": "Low", "High": "Low", "Very High": "Moderate"
-                },
-                "Low": {
-                    "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
-                    "Moderate": "Moderate", "High": "Moderate", "Very High": "High"
-                },
-                "Moderate": {
-                    "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
-                    "Moderate": "Moderate", "High": "High", "Very High": "Very High"
-                },
-                "High": {
-                    "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
-                    "Moderate": "Moderate", "High": "High", "Very High": "Very High"
-                }
-            };
+            "Negligible": {
+                "Negligible": "Negligible", "Very Low": "Negligible", "Low": "Negligible",
+                "Moderate": "Negligible", "High": "Negligible", "Very High": "Negligible"
+            },
+            "Exceptionally Low": {
+                "Negligible": "Not Applicable", "Very Low": "Not Applicable", "Low": "Not Applicable",
+                "Moderate": "Negligible", "High": "Very Low", "Very High": "Very Low"
+            },
+            "Very Very Low": {
+                "Negligible": "Not Applicable", "Very Low": "Not Applicable", "Low": "Not Applicable",
+                "Moderate": "Very Low", "High": "Low", "Very High": "Low"
+            },
+            "Very Low": {
+                "Negligible": "Negligible", "Very Low": "Negligible", "Low": "Very Low",
+                "Moderate": "Low", "High": "Low", "Very High": "Moderate"
+            },
+            "Low": {
+                "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
+                "Moderate": "Moderate", "High": "Moderate", "Very High": "High"
+            },
+            "Moderate": {
+                "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
+                "Moderate": "Moderate", "High": "High", "Very High": "Very High"
+            },
+            "High": {
+                "Negligible": "Negligible", "Very Low": "Very Low", "Low": "Low",
+                "Moderate": "Moderate", "High": "High", "Very High": "Very High"
+            }
+        };
         function overallRisk(like, impact) {
             return TABLE_5_6[like] && TABLE_5_6[like][impact] ? TABLE_5_6[like][impact] : "Not Applicable";
         }
 
-        // Scalars with wider spread for better visibility
-        const likeToScalar = lvl => ({
-            "High": 1.20,       // Largest
-            "Moderate": 1.00,   // Noticeable drop
-            "Low": 0.75,        // Further drop
-            "Very Low": 0.50,   // Smaller
-            "Negligible": 0.25  // Smallest
-        })[lvl];
+        // ----- Responsiveness -----
+        // Preserve original aspect ratio ~ 440 / 1150
+        const CANVAS_ASPECT = 440 / 1150;
 
-        const impactToScalar = imp => ({
-            "Very High": 1.20,  // Largest
-            "High": 1.00,       // Noticeable drop
-            "Moderate": 0.75,   // Further drop
-            "Low": 0.50,        // Smaller
-            "Very Low": 0.30,   // Even smaller
-            "Negligible": 0.10  // Smallest
-        })[imp];
+        function getCanvasSize() {
+            const card = document.querySelector('.canvas-card');
+            const header = document.querySelector('.canvas-card .header');
+            const bodyPadding = parseInt(getComputedStyle(document.body).paddingTop) + parseInt(getComputedStyle(document.body).paddingBottom);
 
-        const riskToScalar = risk => ({
-            "Very High": 1.20,  // Largest
-            "High": 1.00,       // Noticeable drop
-            "Moderate": 0.75,   // Further drop
-            "Low": 0.50,        // Smaller
-            "Very Low": 0.30,   // Even smaller
-            "Very very low": 0.20,
-            "Exceptionally low": 0.15,
-            "Negligible": 0.10,
-            "Not Applicable": 0.10
-        })[risk];
+            const w = Math.max(320, Math.floor(card.clientWidth));                // full card width
+            const viewportMaxH = window.innerHeight - bodyPadding - (header?.offsetHeight || 0) - 40; // keep inside viewport
+            const idealH = Math.round(w * CANVAS_ASPECT);
+            const h = Math.max(260, Math.min(idealH, viewportMaxH));              // cap to viewport, min sensible height
+            return { w, h };
+        }
 
         // ============ p5 + recording ============
-
-        const CAN_W = 1150, CAN_H = 440;
 
         // UI refs
         let shapeSel, speedSlider, sMinSlider, sMaxSlider;
@@ -476,12 +376,11 @@
 
         // Load virus image
         let virusImg;
-        function preload() {
-            virusImg = loadImage('virus.png');
-        }
+        function preload() { virusImg = loadImage('virus.png'); }
 
         function setup() {
-            const cnv = createCanvas(CAN_W, CAN_H);
+            const { w, h } = getCanvasSize();
+            const cnv = createCanvas(w, h);
             document.querySelector('.canvas-card').appendChild(cnv.canvas);
             canvasEl = cnv.canvas;
             pixelDensity(1); noStroke(); textFont('Arial', 12);
@@ -514,6 +413,11 @@
             gsap.from(".card", { duration: 1, y: 50, opacity: 0, stagger: 0.2, ease: "power2.out" });
             gsap.from(".controls .row", { duration: 0.8, x: -20, opacity: 0, stagger: 0.1, delay: 0.5, ease: "power2.out" });
             gsap.from(".ratings .item", { duration: 0.8, x: 20, opacity: 0, stagger: 0.1, delay: 0.7, ease: "power2.out" });
+        }
+
+        function windowResized() {
+            const { w, h } = getCanvasSize();
+            resizeCanvas(w, h);
         }
 
         function restart() { t = 0; paused = false; finished = false; setStatus('Playing'); loop(); }
@@ -663,6 +567,36 @@
             drawNodePreview(X4, Y, sOverall);
         }
 
+        // Scalars with wider spread for better visibility
+        const likeToScalar = lvl => ({
+            "High": 1.20,
+            "Moderate": 1.00,
+            "Low": 0.75,
+            "Very Low": 0.50,
+            "Negligible": 0.25
+        })[lvl];
+
+        const impactToScalar = imp => ({
+            "Very High": 1.20,
+            "High": 1.00,
+            "Moderate": 0.75,
+            "Low": 0.50,
+            "Very Low": 0.30,
+            "Negligible": 0.10
+        })[imp];
+
+        const riskToScalar = risk => ({
+            "Very High": 1.20,
+            "High": 1.00,
+            "Moderate": 0.75,
+            "Low": 0.50,
+            "Very Low": 0.30,
+            "Very very low": 0.20,
+            "Exceptionally low": 0.15,
+            "Negligible": 0.10,
+            "Not Applicable": 0.10
+        })[risk];
+
         function drawNodePreview(x, y, s) {
             push();
             noStroke();
@@ -713,3 +647,5 @@
             }
         }
     </script>
+</body>
+</html>
