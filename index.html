@@ -51,6 +51,17 @@
             grid-template-columns: 360px 1fr;
             gap: var(--gap);
             animation: fadeIn 1s ease-out;
+            align-items: start;
+            /* NEW: align grid items to the top */
+        }
+
+        /* Left column wrapper to stack cards vertically */
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap);
+            align-self: start;
+            /* NEW: pin left column to top of its grid cell */
         }
 
         .card {
@@ -185,6 +196,8 @@
         .canvas-card {
             padding: 0;
             overflow: visible;
+            align-self: start;
+            /* NEW: pin canvas card to top of its grid cell */
         }
 
         .header {
@@ -206,7 +219,6 @@
             display: block;
             width: 100%;
             height: auto;
-            /* responsive height */
             background: #1a1f2b;
             border-radius: 0 0 16px 16px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -225,6 +237,29 @@
 
         .pill:hover {
             transform: scale(1.05);
+        }
+
+        /* Left-side disclaimer card */
+        .disclaimer-card {
+            font-size: 13px;
+            line-height: 1.45;
+            color: var(--muted);
+        }
+
+        .disclaimer-card strong {
+            color: var(--ink);
+        }
+
+        .disclaimer-card .credit {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--glow);
+            text-align: left;
+        }
+
+        .disclaimer-card .credit a {
+            color: var(--glow);
+            text-decoration: underline;
         }
 
         @keyframes fadeIn {
@@ -271,90 +306,107 @@
 
 <body>
     <div class="wrap">
-        <!-- Left: Controls + Ratings -->
-        <div class="card">
-            <h2>Controls</h2>
-            <div class="controls">
-                <div class="row">
-                    <div>
-                        <label>Shape</label>
-                        <select id="shapeSel">
-                            <option>Bug</option>
-                            <option>Virus</option>
-                            <option>Spore</option>
+        <!-- LEFT COLUMN: controls + disclaimer stacked -->
+        <div class="left-col">
+            <div class="card">
+                <h2>Controls</h2>
+                <div class="controls">
+                    <div class="row">
+                        <div>
+                            <label>Shape</label>
+                            <select id="shapeSel">
+                                <option>Bug</option>
+                                <option>Virus</option>
+                                <option>Spore</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Speed (faster → slower)</label>
+                            <input id="speed" type="range" min="30" max="200" step="5" value="110">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <label>Min size</label>
+                            <input id="sizeMin" type="range" min="6" max="40" step="1" value="10">
+                        </div>
+                        <div>
+                            <label>Max size</label>
+                            <input id="sizeMax" type="range" min="30" max="200" step="1" value="150">
+                        </div>
+                    </div>
+                    <div class="btns">
+                        <button id="playBtn">Play</button>
+                        <button id="pauseBtn">Pause</button>
+                        <button id="recWebmBtn" title="Record WebM">Record WebM</button>
+                        <button id="stopSaveBtn" disabled>Stop &amp; Save</button>
+                        <span id="status">Idle</span>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 16px;">Ratings</h2>
+                <div class="ratings">
+                    <div class="item">
+                        <label>Entry</label>
+                        <select id="entrySel">
+                            <option>High</option>
+                            <option selected>Moderate</option>
+                            <option>Low</option>
+                            <option>Very Low</option>
+                            <option>Negligible</option>
                         </select>
                     </div>
-                    <div>
-                        <label>Speed (faster → slower)</label>
-                        <input id="speed" type="range" min="30" max="200" step="5" value="110">
+                    <div class="item">
+                        <label>Exposure</label>
+                        <select id="exposureSel">
+                            <option>High</option>
+                            <option>Moderate</option>
+                            <option selected>Low</option>
+                            <option>Very Low</option>
+                            <option>Negligible</option>
+                        </select>
                     </div>
-                </div>
-                <div class="row">
-                    <div>
-                        <label>Min size</label>
-                        <input id="sizeMin" type="range" min="6" max="40" step="1" value="10">
+                    <div class="item">
+                        <label>Establishment</label>
+                        <select id="estabSel">
+                            <option>High</option>
+                            <option selected>Moderate</option>
+                            <option>Low</option>
+                            <option>Very Low</option>
+                            <option>Negligible</option>
+                        </select>
                     </div>
-                    <div>
-                        <label>Max size</label>
-                        <input id="sizeMax" type="range" min="30" max="200" step="1" value="150">
+                    <div class="item">
+                        <label>Impact (Consequence)</label>
+                        <select id="econSel">
+                            <option>Very High</option>
+                            <option>High</option>
+                            <option selected>Moderate</option>
+                            <option>Low</option>
+                            <option>Very Low</option>
+                            <option>Negligible</option>
+                        </select>
                     </div>
-                </div>
-                <div class="btns">
-                    <button id="playBtn">Play</button>
-                    <button id="pauseBtn">Pause</button>
-                    <button id="recWebmBtn" title="Record WebM">Record WebM</button>
-                    <button id="stopSaveBtn" disabled>Stop &amp; Save</button>
-                    <span id="status">Idle</span>
                 </div>
             </div>
 
-            <h2 style="margin-top: 16px;">Ratings</h2>
-            <div class="ratings">
-                <div class="item">
-                    <label>Entry</label>
-                    <select id="entrySel">
-                        <option>High</option>
-                        <option selected>Moderate</option>
-                        <option>Low</option>
-                        <option>Very Low</option>
-                        <option>Negligible</option>
-                    </select>
-                </div>
-                <div class="item">
-                    <label>Exposure</label>
-                    <select id="exposureSel">
-                        <option>High</option>
-                        <option>Moderate</option>
-                        <option selected>Low</option>
-                        <option>Very Low</option>
-                        <option>Negligible</option>
-                    </select>
-                </div>
-                <div class="item">
-                    <label>Establishment</label>
-                    <select id="estabSel">
-                        <option>High</option>
-                        <option selected>Moderate</option>
-                        <option>Low</option>
-                        <option>Very Low</option>
-                        <option>Negligible</option>
-                    </select>
-                </div>
-                <div class="item">
-                    <label>Impact (Consequence)</label>
-                    <select id="econSel">
-                        <option>Very High</option>
-                        <option>High</option>
-                        <option selected>Moderate</option>
-                        <option>Low</option>
-                        <option>Very Low</option>
-                        <option>Negligible</option>
-                    </select>
+            <!-- Disclaimer placed further down on the LEFT -->
+            <div class="card disclaimer-card">
+                <p><strong>Disclaimer:</strong> This animation is based on one specific matrix developed in New Zealand.
+                    Each country may have its own risk assessment frameworks or rating systems, which can differ from
+                    what is shown here.</p>
+                <div class="credit">
+                    Developed by
+                    <a href="https://www.linkedin.com/in/hossein-narouei-k-hadnan/" target="_blank"
+                        rel="noopener noreferrer" aria-label="Hossein Narouei K. Hadnan on LinkedIn">
+                        Hossein Narouei K. Hadnan
+                    </a>
+                    &middot; <a href="mailto:khandangit@gmail.com">khandangit@gmail.com</a>
                 </div>
             </div>
         </div>
 
-        <!-- Right: Canvas -->
+        <!-- RIGHT COLUMN: canvas -->
         <div class="card canvas-card">
             <div class="header">
                 <div class="info">
@@ -368,6 +420,12 @@
     </div>
 
     <script>
+        // ===== Canvas text sizes (px) =====
+        const TXT = {
+            tick: 15,    // tick labels under the timeline (increased)
+            bubble: 18   // floating label above the marker (increased)
+        };
+
         // ============ NZ MATRICES ============
 
         // Table 5-4 (corrected): High×Very Low → Low, High×Low → Moderate
@@ -612,7 +670,9 @@
             noStroke();
 
             // Tick labels
-            fill(224, 230, 255); textAlign(CENTER);
+            textSize(TXT.tick);
+            fill(224, 230, 255);
+            textAlign(CENTER);
             text('Entry', X0, Y + 28);
             text('Exposure', X1, Y + 28);
             text('Establishment', X2, Y + 28);
@@ -624,7 +684,7 @@
             const entryLike = entrySel.value;
             const exposureLike = exposureSel.value;
             const estabLike = estabSel.value;
-            const combinedLike = combine3(entryLike, exposureLike, estabLike);
+            const combinedLike = combine3(entryLike, exposureLike, estabSel.value);
             const impact = econSel.value;
             const risk = overallRisk(combinedLike, impact);
 
@@ -635,7 +695,7 @@
             const sz = frac => S_MIN + (S_MAX - S_MIN) * Math.max(0, Math.min(1, frac));
             const sEntry = sz(likeToFrac(entryLike));
             const sExpos = sz(likeToFrac(exposureLike));
-            const sEstab = sz(likeToFrac(estabLike));
+            const sEstab = sz(likeToFrac(estabSel.value));
             const sImpact = sz(impactToFrac(impact));
             const sOverall = sz(riskToFrac(risk));
 
@@ -653,7 +713,7 @@
             } else if (t <= 2) {
                 x = map(t, 1, 2, X1, X2); s = lerp(sExpos, sEstab, t - 1); label = exposureLike;
             } else if (t <= 3) {
-                x = map(t, 2, 3, X2, X3); s = lerp(sEstab, sImpact, t - 2); label = estabLike;
+                x = map(t, 2, 3, X2, X3); s = lerp(sEstab, sImpact, t - 2); label = estabSel.value;
             } else {
                 x = map(t, 3, 4, X3, X4); s = lerp(sImpact, sOverall, t - 3); label = (t === 4) ? risk : impact;
             }
@@ -671,6 +731,7 @@
 
             // Floating label (bold value only)
             push();
+            textSize(TXT.bubble);
             const bold = label;
             const tw = textWidth(bold) + 16, th = 24;
             textAlign(CENTER, BOTTOM);
