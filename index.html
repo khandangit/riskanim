@@ -90,6 +90,9 @@
             color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            /* Keep selects level even when labels wrap */
+            display: block;
+            min-height: 28px;
         }
 
         select,
@@ -218,7 +221,6 @@
             width: 100%;
             height: auto;
             background: var(--card-bg);
-            /* CSS fallback (opaque) */
             border-radius: 0 0 16px 16px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
@@ -317,18 +319,17 @@
                     <div class="row">
                         <div>
                             <label>Min size</label>
-                            <input id="sizeMin" type="range" min="6" max="40" step="1" value="10">
+                            <input id="sizeMin" type="range" min="6" max="40" step="1" value="5">
                         </div>
                         <div>
                             <label>Max size</label>
-                            <input id="sizeMax" type="range" min="30" max="200" step="1" value="150">
+                            <input id="sizeMax" type="range" min="30" max="200" step="1" value="120">
                         </div>
                     </div>
                     <div class="btns">
                         <button id="playBtn">Play</button>
                         <button id="pauseBtn">Pause</button>
                         <button id="recWebmBtn" title="Record WebM">Record WebM</button>
-                        <button id="stopSaveBtn" disabled>Stop &amp; Save</button>
                         <span id="status">Idle</span>
                     </div>
                 </div>
@@ -391,12 +392,19 @@
                 </div>
             </div>
         </div>
+
         <div class="card canvas-card">
             <div class="header">
                 <div class="info">
                     <span id="likeInfo" class="pill">Combined likelihood: —</span>
+                    <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                        Sum of Entry, Exposure, and Establishment
+                    </div>
                     &nbsp;&nbsp;
                     <span id="riskInfo" class="pill">Overall risk: —</span>
+                    <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                        Sum of Combined Likelihood and Impact
+                    </div>
                 </div>
             </div>
         </div>
@@ -428,6 +436,24 @@
             return TABLE_5_6[like] && TABLE_5_6[like][impact] ? TABLE_5_6[like][impact] : "Not Applicable";
         }
 
+        // ===== Unified size scale for shared labels =====
+        const BASE_FRAC = {
+            "Negligible": 0.15,
+            "Very Low": 0.30,
+            "Low": 0.45,
+            "Moderate": 0.65,
+            "High": 0.85,
+            "Very High": 1.00
+        };
+
+        const likeToFrac = lvl => BASE_FRAC[lvl] ?? BASE_FRAC["Negligible"];
+        const impactToFrac = imp => BASE_FRAC[imp] ?? BASE_FRAC["Negligible"];
+        const riskToFrac = risk => {
+            const extras = { "Very Very Low": 0.20, "Exceptionally Low": 0.15, "Not Applicable": 0.12 };
+            return BASE_FRAC[risk] ?? extras[risk] ?? 0.12;
+        };
+        // ===============================================
+
         const CANVAS_ASPECT = 440 / 1150;
 
         function getCanvasSize() {
@@ -443,7 +469,7 @@
 
         let shapeSel, speedSlider, sMinSlider, sMaxSlider;
         let entrySel, exposureSel, estabSel, econSel;
-        let playBtn, pauseBtn, statusEl, recWebmBtn, stopSaveBtn;
+        let playBtn, pauseBtn, statusEl, recWebmBtn;
         let likeInfo, riskInfo;
 
         let t = 0;
@@ -457,7 +483,7 @@
                 this.x = x; this.y = y;
                 this.vx = random(-1, 1); this.vy = random(-1, 1);
                 this.size = random(2, 6);
-                this.alpha = 255;      // opaque particles
+                this.alpha = 255;
                 this.life = random(30, 60);
             }
             update() { this.x += this.vx; this.y += this.vy; this.life--; }
@@ -471,7 +497,6 @@
         }
 
         function setup() {
-            /* 1) Remove alpha channel so canvas is always opaque */
             setAttributes({ alpha: false });
 
             const { w, h } = getCanvasSize();
@@ -484,7 +509,6 @@
             noStroke();
             textFont('Arial', 12);
 
-            /* 2) Paint immediately so first frame isn’t see-through */
             background(26, 31, 43);
 
             // Wire UI
@@ -500,18 +524,15 @@
             pauseBtn = document.getElementById('pauseBtn');
             statusEl = document.getElementById('status');
             recWebmBtn = document.getElementById('recWebmBtn');
-            stopSaveBtn = document.getElementById('stopSaveBtn');
             likeInfo = document.getElementById('likeInfo');
             riskInfo = document.getElementById('riskInfo');
 
             playBtn.onclick = () => restart();
             pauseBtn.onclick = () => { if (!finished) { paused = !paused; setStatus(paused ? 'Paused' : 'Playing'); } };
             recWebmBtn.onclick = () => startRecordingWebM();
-            stopSaveBtn.onclick = () => stopAndSaveRecording();
 
             setStatus('Idle');
 
-            /* 3) Don’t fade the canvas — only fade left cards + the canvas header */
             gsap.from(".left-col .card, .canvas-card .header", {
                 duration: 0.4,
                 opacity: 0,
@@ -530,19 +551,6 @@
         function restart() { t = 0; paused = false; finished = false; setStatus('Playing'); loop(); }
         function setStatus(msg) { statusEl.textContent = msg; }
 
-        const likeToFrac = lvl => ({
-            "High": 1.00, "Moderate": 0.75, "Low": 0.50, "Very Low": 0.30, "Negligible": 0.15
-        })[lvl];
-
-        const impactToFrac = imp => ({
-            "Very High": 1.00, "High": 0.85, "Moderate": 0.65, "Low": 0.45, "Very Low": 0.30, "Negligible": 0.15
-        })[imp];
-
-        const riskToFrac = risk => ({
-            "Very High": 1.00, "High": 0.85, "Moderate": 0.65, "Low": 0.45, "Very Low": 0.30,
-            "Very Very Low": 0.20, "Exceptionally Low": 0.15, "Negligible": 0.12, "Not Applicable": 0.12
-        })[risk] ?? 0.12;
-
         function startRecordingWebM() {
             if (capturing) return;
             restart();
@@ -554,39 +562,18 @@
             mediaRecorder.onstop = async () => {
                 const blob = new Blob(webmChunks, { type: 'video/webm' });
                 await saveBlobWithDialog(blob, 'risk_pathway_nz.webm', 'video/webm');
-                setStatus('Saved WebM ✅'); mediaRecorder = null;
+                setStatus('Saved WebM ✅');
+                mediaRecorder = null;
+                recWebmBtn.disabled = false;
+                capturing = false;
             };
             mediaRecorder.start();
-            capturing = true; recWebmBtn.disabled = true; stopSaveBtn.disabled = false;
+            capturing = true;
+            recWebmBtn.disabled = true;
             setStatus('Recording WebM…');
         }
 
-        async function stopAndSaveRecording() {
-            if (!capturing) return;
-            stopSaveBtn.disabled = true; setStatus('Finalising WebM…');
-            if (mediaRecorder) mediaRecorder.stop();
-            capturing = false; recWebmBtn.disabled = false; stopSaveBtn.disabled = true;
-        }
-
-        async function saveBlobWithDialog(blob, suggestedName, mime) {
-            if (window.showSaveFilePicker) {
-                try {
-                    const handle = await window.showSaveFilePicker({
-                        suggestedName,
-                        types: [{ description: 'WebM', accept: { [mime]: ['.webm'] } }]
-                    });
-                    const writable = await handle.createWritable();
-                    await writable.write(blob); await writable.close(); return;
-                } catch (e) { /* user cancelled; fall back */ }
-            }
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = suggestedName;
-            document.body.appendChild(a); a.click();
-            setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
-        }
-
         function draw() {
-            // 4) Opaque background every frame
             background(26, 31, 43);
 
             if (!paused && random() < 0.3) particles.push(new Particle(random(width), random(height)));
@@ -639,7 +626,13 @@
             if (!paused && !finished) {
                 const speedDiv = Number(speedSlider.value);
                 t += (1 / speedDiv);
-                if (t >= 4) { t = 4; finished = true; if (!capturing) noLoop(); setStatus('Finished'); }
+                if (t >= 4) {
+                    t = 4;
+                    finished = true;
+                    setStatus('Finished');
+                    if (capturing && mediaRecorder) mediaRecorder.stop();
+                    else if (!capturing) noLoop();
+                }
             }
 
             let x, s, label;
